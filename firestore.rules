@@ -1,0 +1,72 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: applications
+    // Document ID: auto-generated
+    // Fields:
+    //   - studentName: string (required)
+    //   - parentName: string (required)
+    //   - email: string (required, email format)
+    //   - phone: string (required)
+    //   - grade: string (required)
+    //   - dateOfBirth: string (optional)
+    //   - address: string (optional)
+    //   - status: string (required, enum: pending, reviewed, accepted, rejected)
+    //   - createdAt: timestamp (required)
+    //   - uid: string (required, owner UID)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidApplication(data) {
+      return data.keys().hasAll(['studentName', 'parentName', 'email', 'phone', 'grade', 'status', 'createdAt', 'uid']) &&
+             data.studentName is string && data.studentName.size() > 0 && data.studentName.size() < 100 &&
+             data.parentName is string && data.parentName.size() > 0 && data.parentName.size() < 100 &&
+             data.email is string && isValidEmail(data.email) &&
+             data.phone is string && data.phone.size() >= 10 && data.phone.size() <= 15 &&
+             data.grade is string &&
+             data.status in ['pending', 'reviewed', 'accepted', 'rejected'] &&
+             data.createdAt is timestamp &&
+             data.uid == request.auth.uid;
+    }
+
+    match /applications/{applicationId} {
+      // Users can only read their own applications
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      
+      // Users can create their own applications with 'pending' status
+      allow create: if isAuthenticated() && 
+                      isValidApplication(request.resource.data) && 
+                      request.resource.data.status == 'pending';
+      
+      // Users can update their own applications (but not the status or uid)
+      allow update: if isAuthenticated() && 
+                      isOwner(resource.data.uid) && 
+                      isValidApplication(request.resource.data) &&
+                      request.resource.data.status == resource.data.status &&
+                      request.resource.data.uid == resource.data.uid;
+    }
+    
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+  }
+}

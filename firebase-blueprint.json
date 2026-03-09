@@ -1,0 +1,28 @@
+{
+  "entities": {
+    "Application": {
+      "title": "School Application",
+      "description": "A student's application for admission to the school.",
+      "type": "object",
+      "properties": {
+        "studentName": { "type": "string", "description": "Full name of the student" },
+        "parentName": { "type": "string", "description": "Full name of the parent/guardian" },
+        "email": { "type": "string", "format": "email", "description": "Contact email address" },
+        "phone": { "type": "string", "description": "Contact phone number" },
+        "grade": { "type": "string", "description": "Grade applying for" },
+        "dateOfBirth": { "type": "string", "format": "date", "description": "Student's date of birth" },
+        "address": { "type": "string", "description": "Residential address" },
+        "status": { "type": "string", "enum": ["pending", "reviewed", "accepted", "rejected"], "description": "Application status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp of application submission" },
+        "uid": { "type": "string", "description": "UID of the user who submitted the application" }
+      },
+      "required": ["studentName", "parentName", "email", "phone", "grade", "uid"]
+    }
+  },
+  "firestore": {
+    "/applications/{applicationId}": {
+      "schema": "Application",
+      "description": "Collection of school admission applications"
+    }
+  }
+}

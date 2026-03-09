@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #d81b60; /* Vibrant Pink */
+  --color-secondary: #00acc1; /* Bright Cyan */
+  --color-accent: #fbc02d; /* Bright Yellow */
+  --color-holi-pink: #e91e63;
+  --color-holi-blue: #2196f3;
+  --color-holi-green: #4caf50;
+  --color-holi-orange: #ff9800;
+  --color-holi-purple: #9c27b0;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-slate-50;
+  }
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, rgba(216, 27, 96, 0.8), rgba(0, 172, 193, 0.8), rgba(251, 192, 45, 0.8));
+  background-size: 200% 200%;
+  animation: gradient-shift 10s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.color-splash {
+  background-image: radial-gradient(circle at 10% 20%, rgba(233, 30, 99, 0.1) 0%, transparent 20%),
+                    radial-gradient(circle at 90% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 20%),
+                    radial-gradient(circle at 50% 50%, rgba(76, 175, 80, 0.1) 0%, transparent 30%),
+                    radial-gradient(circle at 80% 10%, rgba(255, 152, 0, 0.1) 0%, transparent 20%);
+}
